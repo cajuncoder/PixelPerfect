@@ -78,6 +78,7 @@ public class Worksheet {
 		if(clickR) {
 			Color color = new Color(image.getRGB(cursorX, cursorY), true);
 			Main.brushColor=color;
+			Console.lastCommand="Set color to: "+color.toString();
 			//image.setRGB(cursorX, cursorY, color.getRGB());
 		}
 

@@ -18,8 +18,8 @@ public class Console {
 
 	int fontSize = 14;
 	Font font = new Font("Consolas", Font.PLAIN, fontSize);
-	public String inputLine = "";
-	public String lastCommand = "Press <enter> to type a command.";
+	public static String inputLine = "";
+	public static String lastCommand = "Press <enter> to type a command.";
 	public boolean inputMode = false;
 	boolean oldInputMode = false;
 	Map<String, ProcessingMethod> methodMap;

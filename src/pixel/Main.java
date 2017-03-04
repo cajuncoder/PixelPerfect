@@ -18,6 +18,7 @@ import org.omg.CosNaming.NamingContextExtPackage.AddressHelper;
 /**
  * Created by lukes on 2017/02/25.
  * to do:
+ * - clr names: red, red orange, orange, yellow orange, yellow, yellow green, green, blue green, blue, blue violet, violet, red violet
  * - add HSV commands
  * - add color fill
  * - add undo buffer
