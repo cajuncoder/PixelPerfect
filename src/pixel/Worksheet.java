@@ -41,8 +41,8 @@ public class Worksheet {
 	public String load(String fullFilePath) { // TODO: This function
 		String confirmationMessage = "";
 		try {
-			filename = fullFilePath;
 			image = ImageIO.read(new File(fullFilePath));
+			filename = fullFilePath;
 			confirmationMessage = "Loaded " + fullFilePath;
 		}catch (Exception e) {
 			confirmationMessage = "Could not load file!";
@@ -59,7 +59,6 @@ public class Worksheet {
 	public void update(int x, int y, boolean clickL, boolean clickR, Keyboard keyboard) {
 		gx=x;
 		gy=y;
-
 		cursorX = x/zoom;
 		cursorY = y/zoom;
 		if(cursorX < 0) cursorX=0;

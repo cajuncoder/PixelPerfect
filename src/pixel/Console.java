@@ -3,14 +3,19 @@ import pixel.input.Keyboard;
 import pixel.Utility;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
+import javax.swing.filechooser.FileView;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import javax.swing.UIManager;
 /**
  * Created by lukes on 2017/02/27.
  */
@@ -103,13 +108,40 @@ public class Console {
 				if(args.length>1) {
 					main.loadWorksheet(args[1]);
 				}else {
+					/*
 					JFileChooser chooser= new JFileChooser();
 					chooser.setCurrentDirectory(new File(main.worksheet.filename));
+					try {
+						UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					} catch (InstantiationException e) {
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					} catch (UnsupportedLookAndFeelException e) {
+						e.printStackTrace();
+					}
+					//ThumbNailView thumbView=new ThumbNailView();
+					//chooser.setFileView(thumbView);
 					int choice = chooser.showOpenDialog(null);
 					if (choice != JFileChooser.APPROVE_OPTION) return;
 					File chosenFile = chooser.getSelectedFile();
 					String url = chosenFile.getAbsolutePath();
 					main.loadWorksheet(url);
+					*/
+					FileDialog fd = new FileDialog(main.jframe, "Test", FileDialog.LOAD);
+					String image_path;
+
+					fd.setVisible(true);
+					String url = fd.getDirectory() + fd.getFile();
+					//image_path=name;
+					//ImageIcon icon= new ImageIcon(name);
+
+					//String url = chosenFile.getAbsolutePath();
+					main.loadWorksheet(url);
+					//icon.setImage(icon.getImage().getScaledInstance(32,JLabel2.getHeight() , Image.SCALE_DEFAULT));
+					//JLabel2.setIcon(icon);
 				}
 
 			}
@@ -248,4 +280,58 @@ public class Console {
 			g.drawString(lastCommand, 2, height-4);
 		}
 	}
+
+	///////////////////////////////////////////////////////////////////////////////////////
+	/*
+	private class ThumbNailView extends FileView {
+
+		private final ExecutorService executor = Executors.newCachedThreadPool();
+
+		public Icon getIcon(File file) {
+			if (!imageFilePattern.matcher(file.getName()).matches()) {
+				return null;
+			}
+
+			synchronized (imageCache) {
+				ImageIcon icon = imageCache.get(file);
+
+				if (icon == null) {
+					icon = new ImageIcon(LOADING_IMAGE);
+					imageCache.put(file, icon);
+					executor.submit(new ThumbnailIconLoader(icon, file));
+				}
+
+				return icon;
+			}
+		}
+	}
+
+	private class ThumbnailIconLoader implements Runnable {
+
+		private final ImageIcon icon;
+		private final File file;
+
+		public ThumbnailIconLoader(ImageIcon i, File f) {
+			icon = i;
+			file = f;
+		}
+
+		public void run() {
+			System.out.println("Loading image: " + file);
+
+			// Load and scale the image down, then replace the icon's old image with the new one.
+			ImageIcon newIcon = new ImageIcon(file.getAbsolutePath());
+			Image img = newIcon.getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
+			icon.setImage(img);
+
+			// Repaint the dialog so we see the new icon.
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					Main.jpanel.repaint();
+				}
+			});
+		}
+	}*/
+
 }
+

@@ -13,7 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.omg.CosNaming.NamingContextExtPackage.AddressHelper;
+//import org.omg.CosNaming.NamingContextExtPackage.AddressHelper;
 
 /**
  * Created by lukes on 2017/02/25.
@@ -28,6 +28,7 @@ import org.omg.CosNaming.NamingContextExtPackage.AddressHelper;
  * - allow images to be centered
  * - add pan for large images
  * - add color picker?
+ * - save as pbg, bmp, etc
  */
 public class Main {
 	// ****************************************************//
@@ -41,11 +42,11 @@ public class Main {
 	public static String brushType = "brush";
 	public static Color brushColor = Color.BLACK;
 	public static int brushSize = 1;
-
+	public static enum tool {PENCIL, SELECT};
 	// JFrame
 	public JFrame jframe = new JFrame();
-	JPanel jpanel = new JPanel();
-	
+	public static JPanel jpanel = new JPanel();
+
 	// Graphics
 	public static int width = 960;//32*16; //272
 	public static int height = 540; //208
@@ -56,6 +57,8 @@ public class Main {
 	public Graphics2D bufferGraphics;
 	public Graphics2D g;
 	public Worksheet worksheet;
+	public Worksheet palette;
+	public Worksheet activeSheet = worksheet;
 	// Keyboard
 	public Keyboard keyboard;
 	public Mouse mouse;
@@ -79,6 +82,7 @@ public class Main {
 		// JPanel
 		jpanel.setPreferredSize(new Dimension(width * scale, height * scale));
 		jpanel.setFocusable(false);
+
 		// jpanel.requestFocus();
 		jframe.pack();
 		jframe.setLocationRelativeTo(null);
@@ -86,7 +90,7 @@ public class Main {
 		// Input
 		keyboard = new Keyboard(this);
 		mouse = new Mouse(this);
-		mouseMotion = new MouseMotion();
+		mouseMotion = new MouseMotion(this);
 		console = new Console(this);
 		//mouseWheel = new MouseWheel();
 		jframe.addKeyListener(keyboard);
@@ -114,7 +118,7 @@ public class Main {
 			//bufferGraphics.finalize();
 
 		// time	
-		long dt = 1000000000 / 120;
+		long dt = 1000000000 / 20;
 		long fpslimit = 1000000000 / 60;
 		long currentTime = System.nanoTime();
 		long oldfps = 0;
@@ -124,8 +128,13 @@ public class Main {
 		long t = 0;
 		int fps = 0;
 
+			//////////////////////////////////////////
 			//test canvas
 			worksheet = new Worksheet(32, 32);
+			palette = new Worksheet(32, 32);
+			palette.load("palette.png");
+			palette.zoom=24;
+			//////////////////////////////////////////
 
 		while (true) {
 			width = jpanel.getWidth()/scale;
@@ -204,7 +213,12 @@ public class Main {
 	public void update() {
 		keyboard.update();
 		console.update(keyboard);
-		worksheet.update(mouseMotion.x, mouseMotion.y, mouse.clickL, mouse.clickR, keyboard);
+		if(keyboard.shift) {
+			activeSheet=palette;
+		}else {
+			activeSheet=worksheet;
+		}
+		activeSheet.update(mouseMotion.x, mouseMotion.y, mouse.clickL, mouse.clickR, keyboard);
 	}
 	
 	public void render() {
@@ -213,6 +227,7 @@ public class Main {
 		bufferGraphics.fillRect(0, 0, width * scale, height * scale);
 		//drawBackground(bufferGraphics);
 		worksheet.draw(bufferGraphics);
+		if(activeSheet==palette) palette.draw(bufferGraphics);
 		console.draw(bufferGraphics, width, height);
 		g.drawImage(bufferImage, 0, 0, width * scale, height * scale, jpanel);
 		g.dispose();
