@@ -15,7 +15,7 @@ public class Keyboard implements KeyListener, Serializable {
 	public int keyCodeTyped = 0;
 	private String lastKeyTyped = "";
 	private int lastKeyCodeTyped = 0;
-	public boolean up, down, left, right, shift, ctrl, r, g, q, s, tab;
+	public boolean up, down, left, right, shift, ctrl, r, g, q, s, o, tab;
 	Main main;
 
 	public Keyboard(Main main) {
@@ -34,6 +34,7 @@ public class Keyboard implements KeyListener, Serializable {
 		g = keys[KeyEvent.VK_G];
 		q = keys[KeyEvent.VK_Q];
 		s = keys[KeyEvent.VK_S];
+		o = keys[KeyEvent.VK_O];
 		tab = keys[KeyEvent.VK_TAB];
 		
 		if(keyTyped.equals(lastKeyTyped)) keyTyped = "";

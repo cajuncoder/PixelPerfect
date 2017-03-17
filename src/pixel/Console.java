@@ -9,10 +9,12 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.swing.UIManager;
@@ -21,13 +23,14 @@ import javax.swing.UIManager;
  */
 public class Console {
 
+	Main main;
 	int fontSize = 14;
 	Font font = new Font("Consolas", Font.PLAIN, fontSize);
 	public static String inputLine = "";
 	public static String lastCommand = "Press <enter> to type a command.";
 	public boolean inputMode = false;
 	boolean oldInputMode = false;
-	Map<String, ProcessingMethod> methodMap;
+	static Map<String, ProcessingMethod> methodMap;
 	AffineTransform affinetransform = new AffineTransform();
 	FontRenderContext frc = new FontRenderContext(affinetransform,true,true);
 	String[] commands = {
@@ -61,7 +64,7 @@ public class Console {
 			public void method(String[] args) {
 				if(args.length>=4) {
 					Color color = new Color(Utility.safeParse(args[1]), Utility.safeParse(args[2]), Utility.safeParse(args[3]));
-					Main.brushColor=color;
+					main.brushColor=color;
 					lastCommand = "Brush color set to " + (Utility.safeParse(args[1]) + ", " + Utility.safeParse(args[2]) + ", " + Utility.safeParse(args[3]));
 				}
 			}
@@ -70,7 +73,7 @@ public class Console {
 			public void method(String[] args) {
 				if(args.length>=5) {
 					Color color = new Color(Utility.safeParse(args[1]), Utility.safeParse(args[2]), Utility.safeParse(args[3]), Utility.safeParse(args[4]));
-					Main.brushColor=color;
+					main.brushColor=color;
 					lastCommand = "Brush color set to " + (Utility.safeParse(args[1]) + ", " + Utility.safeParse(args[2]) + ", " + Utility.safeParse(args[3]) + ", " + Utility.safeParse(args[4]));
 				}
 			}
@@ -86,12 +89,18 @@ public class Console {
 				if(args.length>1) {
 					main.saveAsWorksheet(args[1]);
 				}else {
-					JFileChooser chooser= new JFileChooser();
-					chooser.setCurrentDirectory(new File(main.worksheet.filename));
-					int choice = chooser.showSaveDialog(null);
-					if (choice != JFileChooser.APPROVE_OPTION) return;
-					File chosenFile = chooser.getSelectedFile();
-					String url = chosenFile.getAbsolutePath();
+//					JFileChooser chooser= new JFileChooser();
+//					chooser.setCurrentDirectory(new File(main.worksheet.filename));
+//					int choice = chooser.showSaveDialog(null);
+//					if (choice != JFileChooser.APPROVE_OPTION) return;
+//					File chosenFile = chooser.getSelectedFile();
+//					String url = chosenFile.getAbsolutePath();
+					FileDialog fd = new FileDialog(main.jframe, "Save As", FileDialog.SAVE);
+					fd.setFile("*.png");
+					String image_path;
+
+					fd.setVisible(true);
+					String url = fd.getDirectory() + fd.getFile();
 					main.saveAsWorksheet(url);
 				}
 
@@ -103,45 +112,17 @@ public class Console {
 				main.setZoom(Integer.parseInt(args[1]));
 			}
 		});
-		methodMap.put("load", new ProcessingMethod() {
+		methodMap.put("open", new ProcessingMethod() {
 			public void method(String[] args) {
 				if(args.length>1) {
 					main.loadWorksheet(args[1]);
 				}else {
-					/*
-					JFileChooser chooser= new JFileChooser();
-					chooser.setCurrentDirectory(new File(main.worksheet.filename));
-					try {
-						UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
-					} catch (InstantiationException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					} catch (UnsupportedLookAndFeelException e) {
-						e.printStackTrace();
-					}
-					//ThumbNailView thumbView=new ThumbNailView();
-					//chooser.setFileView(thumbView);
-					int choice = chooser.showOpenDialog(null);
-					if (choice != JFileChooser.APPROVE_OPTION) return;
-					File chosenFile = chooser.getSelectedFile();
-					String url = chosenFile.getAbsolutePath();
-					main.loadWorksheet(url);
-					*/
-					FileDialog fd = new FileDialog(main.jframe, "Test", FileDialog.LOAD);
+					FileDialog fd = new FileDialog(main.jframe, "Open File", FileDialog.LOAD);
 					String image_path;
 
 					fd.setVisible(true);
 					String url = fd.getDirectory() + fd.getFile();
-					//image_path=name;
-					//ImageIcon icon= new ImageIcon(name);
-
-					//String url = chosenFile.getAbsolutePath();
 					main.loadWorksheet(url);
-					//icon.setImage(icon.getImage().getScaledInstance(32,JLabel2.getHeight() , Image.SCALE_DEFAULT));
-					//JLabel2.setIcon(icon);
 				}
 
 			}
@@ -173,6 +154,10 @@ public class Console {
 			}
 		});
 		methodMap.put("cd", cd);
+	}
+
+	public static void registerCommand(String[] args) {
+		if (methodMap.containsKey(args[0])) methodMap.get(args[0]).method(args);
 	}
 
 	public void update(Keyboard keyboard){

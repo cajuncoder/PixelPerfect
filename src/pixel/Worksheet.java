@@ -4,6 +4,7 @@ import pixel.input.Keyboard;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.StreamCorruptedException;
@@ -83,6 +84,10 @@ public class Worksheet {
 
 		if(keyboard.ctrl && keyboard.s) {
 			save();
+		}
+		if(keyboard.keyCodeTyped == KeyEvent.VK_CONTROL+KeyEvent.VK_O) {
+			System.out.println("TEST");
+			//Console.registerCommand(new String[]{"open"});
 		}
 	}
 

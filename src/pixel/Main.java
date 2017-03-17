@@ -19,10 +19,12 @@ import javax.swing.JPanel;
  * Created by lukes on 2017/02/25.
  * to do:
  * - clr names: red, red orange, orange, yellow orange, yellow, yellow green, green, blue green, blue, blue violet, violet, red violet
+ * - individual commands (ex: r+=#)
  * - add HSV commands
  * - add color fill
  * - add undo buffer
- * - add a color palette
+ * - commaand buffer
+ * - add a color palette // complete
  * - add select and move
  * - add copy and paste images to and from clipboard
  * - allow images to be centered
@@ -62,7 +64,7 @@ public class Main {
 	// Keyboard
 	public Keyboard keyboard;
 	public Mouse mouse;
-	public Console console;
+	static public Console console;
 	public MouseMotion mouseMotion;
 	//public MouseWheel mouseWheel;
 	
@@ -109,7 +111,6 @@ public class Main {
 	// -------------------Run--------------------//
 	public void run() {
 		try{
-
 			width = jpanel.getWidth()/scale;
 			height = jpanel.getHeight()/scale;
 			//bufferImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -117,7 +118,7 @@ public class Main {
 			bufferGraphics = (Graphics2D) bufferImage.getGraphics();
 			//bufferGraphics.finalize();
 
-		// time	
+		// time
 		long dt = 1000000000 / 20;
 		long fpslimit = 1000000000 / 60;
 		long currentTime = System.nanoTime();
@@ -170,8 +171,8 @@ public class Main {
 				fps++;
 				lastRender = currentTime;
 			}
-			//THIS BREAKS FPS COUNTER
-			if (currentTime - oldfps >= 100000000) {//1000000000) {
+
+			if (currentTime - oldfps >= 1000000000) {
 				String f = "";
 				int w = 0;
 				int h = 0;
@@ -195,8 +196,8 @@ public class Main {
 					w = worksheet.width;
 					h = worksheet.height;
 				}
-				jframe.setTitle("PixelPerfect [" + f + "] (" + w + "x" + h + ")" + " x:" + x + " y:" + y);
-				fps = 0; //FPS COUNTER IS BROKEN
+				jframe.setTitle("PixelPerfect + " + dt + "  [" + f + "] (" + w + "x" + h + ")" + " x:" + x + " y:" + y);
+				fps = 0;
 				ticks = 0;
 				oldfps = currentTime;
 			}
@@ -269,6 +270,10 @@ public class Main {
 		String stringsArentMutable = path.replace('\\', '/');
 		stringsArentMutable+='/';
 		return stringsArentMutable;
+	}
+
+	public static void registerCommand(String[] args) {
+		console.registerCommand(args);
 	}
 	/*
 	public void drawBackground(Graphics2D g) {
